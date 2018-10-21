@@ -1,0 +1,5 @@
+click==7.0
+kubernetes==7.0.0
+pick==0.6.4
+pyyaml==3.13
+
