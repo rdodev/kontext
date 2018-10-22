@@ -11,7 +11,7 @@ This utility was written and manually tested with python 3.7. No effort was made
 ## Installation
 
 ```
-git clone git@gitlab.com:rdodev/kontext.git
+git clone git@github.com:rdodev/kontext.git
 cd kontext
 pipenv install .
 ```
