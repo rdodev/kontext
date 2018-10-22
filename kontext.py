@@ -14,22 +14,35 @@ def kontext():
     from KUBECONFIG (or whereever the kubernetes client is set).
     '''
     # load kubeconfig and get context
-    config.load_kube_config()
+    try:
+        config.load_kube_config()
+    except Exception as e:
+        error('There was an error while trying to load the kube config: ' + repr(e))
     __DEFAULT_LOC__ = config.kube_config.KUBE_CONFIG_DEFAULT_LOCATION
     kubectx = get_context_from_user()
     info("Selected kubeconfig context: " + kubectx)
-    # First, read and parse the yaml file
+    
+    # The, read and parse the yaml file
     info('Opening: ' + __DEFAULT_LOC__)
-    with open(__DEFAULT_LOC__, 'r') as f:
-        f.seek(0)
-        y = yaml.load(f.read())
+    try:
+        with open(__DEFAULT_LOC__, 'r') as f:
+            f.seek(0)
+            y = yaml.load(f.read())
+    except Exception as e:
+        error('Could not open kube config for reading: ' + repr(e))
+    
     # Set context to chosen by user
     y['current-context'] = kubectx
-    # Let's write to the file
+    
+    # Finally, write data to the file
     info('Writing context to kubeconfig')
-    with open(__DEFAULT_LOC__, 'w') as f:
-        f.seek(0)
-        f.write(yaml.dump(y))
+    try:
+        with open(__DEFAULT_LOC__, 'w') as f:
+            f.seek(0)
+            f.write(yaml.dump(y))
+    except Exception as e:
+        error('Could not open kube config for reading: ' + repr(e))
+    
     info('Success. kubectl commands should be running against ' + kubectx + ' cluster.')
 
 
@@ -41,7 +54,8 @@ def get_context_from_user():
     contexts = [context['name'] for context in contexts]
     active_index = contexts.index(active_context['name'])
     option, _ = pick.pick(contexts, title="Please select the context you wish to set as default",
-                     default_index=active_index)
+                    indicator='◇',
+                    default_index=active_index)
     return option
 
 def error(msg):
